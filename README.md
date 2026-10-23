@@ -98,7 +98,7 @@ source .venv/bin/activate
 ```
 *(Если создаете заново на другой машине: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`)*
 
-### 2. Запуск приложения
+### 2. Запуск приложения (локально)
 Запустите единый скрипт:
 ```bash
 python3 run.py
@@ -106,6 +106,16 @@ python3 run.py
 Или напрямую через uvicorn:
 ```bash
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+### 🐳 Запуск через Docker и Docker Compose (альтернативно)
+Проект полностью контейнеризирован. Для запуска в одну команду:
+```bash
+docker compose up -d --build
+```
+Остановка:
+```bash
+docker compose down
 ```
 
 ### 3. Доступ к интерфейсу:

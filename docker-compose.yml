@@ -1,0 +1,22 @@
+services:
+  pulsewatch:
+    build: .
+    container_name: pulsewatch_monitoring
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DEFAULT_CHECK_INTERVAL=30
+      - DEFAULT_TIMEOUT=10
+      - VK_ACCESS_TOKEN=${VK_ACCESS_TOKEN:-}
+      - VK_PEER_ID=${VK_PEER_ID:-}
+    volumes:
+      - pulsewatch_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pulsewatch_data:
