@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ service.name }} | PulseWatch{% endblock %}
+{% block title %}{{ service.name }} // Сектор 2814 | PulseWatch{% endblock %}
 
 {% block content %}
 <div class="space-y-8">
@@ -8,37 +8,37 @@
     <!-- Breadcrumb & Top Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <nav class="flex items-center gap-2 text-xs text-slate-400 mb-2">
-                <a href="/" class="hover:text-white transition-colors flex items-center gap-1">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Все сервисы
+            <nav class="flex items-center gap-2 text-xs text-slate-400 mb-2 font-mono">
+                <a href="/" class="hover:text-emerald-400 transition-colors flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Радар Сектора
                 </a>
                 <span>/</span>
-                <span class="text-slate-300">{{ service.category }}</span>
+                <span class="text-emerald-400/90">{{ service.category }}</span>
             </nav>
             <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-white">{{ service.name }}</h1>
+                <h1 class="text-2xl font-black text-white font-display">{{ service.name }}</h1>
                 <!-- Status Badge -->
                 {% if not service.is_active %}
-                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700">
-                    Пауза
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">
+                    Спящий
                 </span>
                 {% elif service.current_status == 'UP' %}
-                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-up"></span> Доступен (UP)
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#041a0d] text-emerald-400 border border-emerald-500/60 shadow-[0_0_15px_rgba(0,255,136,0.3)] flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 lantern-pulse"></span> В СТРОЮ (UP)
                 </span>
                 {% elif service.current_status == 'DOWN' %}
-                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-400 border border-rose-800 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-rose-400 pulse-down"></span> Недоступен (DOWN)
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-950 text-rose-400 border border-rose-800 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-rose-400 pulse-down"></span> СБОЙ (DOWN)
                 </span>
                 {% elif service.current_status == 'DEGRADED' %}
-                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-950/80 text-amber-400 border border-amber-800">
-                    Замедлен
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-950 text-amber-400 border border-amber-800">
+                    ЗАМЕДЛЕН
                 </span>
                 {% endif %}
             </div>
             <div class="mt-1 flex items-center gap-2 text-xs font-mono text-slate-400">
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">{{ service.check_type }}</span>
-                <a href="{{ service.url }}" target="_blank" class="hover:text-indigo-400 flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-900">{{ service.check_type }}</span>
+                <a href="{{ service.url }}" target="_blank" class="hover:text-emerald-400 flex items-center gap-1">
                     {{ service.url }} <i data-lucide="external-link" class="w-3 h-3"></i>
                 </a>
             </div>
@@ -46,15 +46,15 @@
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="checkServiceNow({{ service.id }}, this)" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Проверить сейчас
+            <button onclick="checkServiceNow({{ service.id }}, this)" class="px-3 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-300 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Скан сейчас
             </button>
-            <button onclick="togglePauseService({{ service.id }}, {{ 'true' if service.is_active else 'false' }})" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <button onclick="togglePauseService({{ service.id }}, {{ 'true' if service.is_active else 'false' }})" class="px-3 py-2 rounded-xl bg-[#06140b] hover:bg-emerald-950 border border-emerald-900 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-1.5">
                 <i data-lucide="{% if service.is_active %}pause{% else %}play{% endif %}" class="w-4 h-4"></i>
-                {% if service.is_active %}Приостановить{% else %}Возобновить{% endif %}
+                {% if service.is_active %}Усыпить{% else %}Разбудить{% endif %}
             </button>
-            <button onclick="openModal('modal-edit-service')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5">
-                <i data-lucide="edit-3" class="w-4 h-4"></i> Настроить
+            <button onclick="openModal('modal-edit-service')" class="px-3 py-2 rounded-xl bg-[#06140b] hover:bg-emerald-950 border border-emerald-900 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-1.5">
+                <i data-lucide="sliders" class="w-4 h-4"></i> Калибровка
             </button>
             <button onclick="deleteService({{ service.id }}, '{{ service.name }}')" class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-900 text-rose-300 text-xs font-semibold transition-colors flex items-center gap-1.5">
                 <i data-lucide="trash-2" class="w-4 h-4"></i> Удалить
@@ -65,55 +65,55 @@
     <!-- Stats 4-Grid -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <!-- 24h -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
-            <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Uptime 24 часа</div>
-            <div class="text-2xl font-bold font-mono text-emerald-400 mt-2">{{ stats.uptime_24h }}%</div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                <div class="bg-emerald-500 h-full rounded-full" style="width: {{ stats.uptime_24h }}%"></div>
+        <div class="lantern-panel rounded-2xl p-5">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">Uptime 24 часа</div>
+            <div class="text-3xl font-black font-mono text-emerald-400 mt-2 drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">{{ stats.uptime_24h }}%</div>
+            <div class="w-full bg-[#040906] h-1.5 rounded-full mt-3 overflow-hidden border border-emerald-950">
+                <div class="bg-emerald-400 h-full rounded-full shadow-[0_0_10px_rgba(0,255,136,0.8)]" style="width: {{ stats.uptime_24h }}%"></div>
             </div>
         </div>
 
         <!-- 7d -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
-            <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Uptime 7 дней</div>
-            <div class="text-2xl font-bold font-mono text-emerald-400 mt-2">{{ stats.uptime_7d }}%</div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                <div class="bg-emerald-500 h-full rounded-full" style="width: {{ stats.uptime_7d }}%"></div>
+        <div class="lantern-panel rounded-2xl p-5">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">Uptime 7 дней</div>
+            <div class="text-3xl font-black font-mono text-emerald-400 mt-2">{{ stats.uptime_7d }}%</div>
+            <div class="w-full bg-[#040906] h-1.5 rounded-full mt-3 overflow-hidden border border-emerald-950">
+                <div class="bg-emerald-400 h-full rounded-full" style="width: {{ stats.uptime_7d }}%"></div>
             </div>
         </div>
 
         <!-- 30d -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
-            <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Uptime 30 дней</div>
-            <div class="text-2xl font-bold font-mono text-indigo-400 mt-2">{{ stats.uptime_30d }}%</div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                <div class="bg-indigo-500 h-full rounded-full" style="width: {{ stats.uptime_30d }}%"></div>
+        <div class="lantern-panel rounded-2xl p-5">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">Uptime 30 дней</div>
+            <div class="text-3xl font-black font-mono text-emerald-300 mt-2">{{ stats.uptime_30d }}%</div>
+            <div class="w-full bg-[#040906] h-1.5 rounded-full mt-3 overflow-hidden border border-emerald-950">
+                <div class="bg-emerald-500 h-full rounded-full" style="width: {{ stats.uptime_30d }}%"></div>
             </div>
         </div>
 
         <!-- Latency -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
-            <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Средний отклик (24ч)</div>
-            <div class="text-2xl font-bold font-mono text-sky-400 mt-2">
+        <div class="lantern-panel rounded-2xl p-5">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">Ср. отклик (24ч)</div>
+            <div class="text-3xl font-black font-mono text-emerald-400 mt-2">
                 {% if stats.avg_latency_ms %}{{ stats.avg_latency_ms }} мс{% else %}—{% endif %}
             </div>
-            <div class="text-[11px] text-slate-500 mt-2 flex items-center justify-between">
+            <div class="text-[10px] text-slate-500 font-mono mt-2 flex items-center justify-between">
                 <span>Мин: {{ stats.min_latency_ms or 0 }} мс</span>
                 <span>Макс: {{ stats.max_latency_ms or 0 }} мс</span>
             </div>
         </div>
     </div>
 
-    <!-- Latency Chart.js -->
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
+    <!-- Latency Chart.js with Emerald Glow -->
+    <div class="lantern-panel rounded-2xl p-6 shadow-2xl relative overflow-hidden">
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
-                    <i data-lucide="activity" class="w-5 h-5 text-brand-400"></i> График времени отклика (мс)
+                    <i data-lucide="activity" class="w-5 h-5 text-emerald-400"></i> Осциллограмма времени отклика (мс)
                 </h3>
-                <p class="text-xs text-slate-400 mt-0.5">Динамика скорости ответа сервиса по последним проверкам</p>
+                <p class="text-xs text-slate-400 mt-0.5">Энергетический импульс и стабильность ответа системы</p>
             </div>
-            <div class="text-xs text-slate-400 font-mono">
+            <div class="text-xs text-emerald-400 font-mono">
                 Интервал: каждые {{ service.interval_seconds }} сек
             </div>
         </div>
@@ -124,26 +124,26 @@
     </div>
 
     <!-- Status History Visualizer (Check Blocks) -->
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
+    <div class="lantern-panel rounded-2xl p-6 shadow-2xl">
         <div class="flex items-center justify-between mb-3">
-            <h3 class="text-sm font-bold text-white">Лента последних проверок</h3>
-            <span class="text-xs text-slate-400">{{ recent_checks|length }} проверок</span>
+            <h3 class="text-sm font-bold text-white">Лента импульсов кольца воли</h3>
+            <span class="text-xs text-emerald-400 font-mono">{{ recent_checks|length }} сканов</span>
         </div>
         <div class="flex items-center gap-1 overflow-x-auto py-2">
             {% for c in recent_checks|reverse %}
             <div 
                 title="{{ c.timestamp.strftime('%H:%M:%S') }}: {{ c.status }} ({% if c.response_time_ms %}{{ c.response_time_ms }} мс{% else %}{{ c.error_message }}{% endif %})" 
-                class="w-3.5 h-8 rounded-sm transition-transform hover:scale-125 cursor-pointer {% if c.status == 'UP' %}bg-emerald-500 hover:bg-emerald-400{% elif c.status == 'DOWN' %}bg-rose-500 hover:bg-rose-400{% else %}bg-amber-500 hover:bg-amber-400{% endif %}">
+                class="w-3.5 h-8 rounded-sm transition-transform hover:scale-125 cursor-pointer {% if c.status == 'UP' %}bg-emerald-400 shadow-[0_0_8px_rgba(0,255,136,0.6)]{% elif c.status == 'DOWN' %}bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]{% else %}bg-amber-400{% endif %}">
             </div>
             {% else %}
-            <span class="text-xs text-slate-500">Проверок еще не зафиксировано</span>
+            <span class="text-xs text-slate-500">Сканов еще не зафиксировано</span>
             {% endfor %}
         </div>
-        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-2">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-2 font-mono">
             <span>Ранее</span>
             <div class="flex items-center gap-3">
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Доступен</span>
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Замедлен</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> В строю</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Замедлен</span>
                 <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Сбой</span>
             </div>
             <span>Сейчас</span>
@@ -154,15 +154,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         <!-- Recent Checks Table -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+        <div class="lantern-panel rounded-2xl p-5">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i data-lucide="list" class="w-4 h-4 text-slate-400"></i> Журнал проверок
+                    <i data-lucide="list" class="w-4 h-4 text-emerald-400"></i> Журнал телеметрии
                 </h3>
             </div>
             <div class="overflow-x-auto max-h-96">
                 <table class="w-full text-left text-xs">
-                    <thead class="text-[11px] text-slate-400 uppercase tracking-wider border-b border-slate-800 bg-slate-950/40 sticky top-0">
+                    <thead class="text-[10px] text-slate-400 uppercase tracking-wider border-b border-emerald-950 pb-2 font-mono">
                         <tr>
                             <th class="py-2.5 px-3">Время (UTC)</th>
                             <th class="py-2.5 px-3">Статус</th>
@@ -171,17 +171,17 @@
                             <th class="py-2.5 px-3">Детали</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800/60 font-mono">
+                    <tbody class="divide-y divide-emerald-950/60 font-mono">
                         {% for c in recent_checks %}
-                        <tr class="hover:bg-slate-800/40 transition-colors">
+                        <tr class="hover:bg-emerald-950/30 transition-colors">
                             <td class="py-2 px-3 text-slate-400">{{ c.timestamp.strftime('%H:%M:%S') }}</td>
                             <td class="py-2 px-3">
                                 {% if c.status == 'UP' %}
-                                <span class="text-emerald-400 font-semibold">UP</span>
+                                <span class="text-emerald-400 font-bold">UP</span>
                                 {% elif c.status == 'DOWN' %}
-                                <span class="text-rose-400 font-semibold">DOWN</span>
+                                <span class="text-rose-400 font-bold">DOWN</span>
                                 {% else %}
-                                <span class="text-amber-400 font-semibold">{{ c.status }}</span>
+                                <span class="text-amber-400 font-bold">{{ c.status }}</span>
                                 {% endif %}
                             </td>
                             <td class="py-2 px-3 text-slate-300">{{ c.status_code or '-' }}</td>
@@ -203,15 +203,15 @@
         </div>
 
         <!-- Incidents Table -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+        <div class="lantern-panel rounded-2xl p-5">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400"></i> История инцидентов ({{ stats.incident_count }})
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i> Журнал инцидентов ({{ stats.incident_count }})
                 </h3>
             </div>
             <div class="overflow-x-auto max-h-96">
                 <table class="w-full text-left text-xs">
-                    <thead class="text-[11px] text-slate-400 uppercase tracking-wider border-b border-slate-800 bg-slate-950/40 sticky top-0">
+                    <thead class="text-[10px] text-slate-400 uppercase tracking-wider border-b border-emerald-950 pb-2 font-mono">
                         <tr>
                             <th class="py-2.5 px-3">Начало</th>
                             <th class="py-2.5 px-3">Статус</th>
@@ -219,15 +219,15 @@
                             <th class="py-2.5 px-3">Причина</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800/60 font-mono">
+                    <tbody class="divide-y divide-emerald-950/60 font-mono">
                         {% for inc in recent_incidents %}
-                        <tr class="hover:bg-slate-800/40 transition-colors">
+                        <tr class="hover:bg-emerald-950/30 transition-colors">
                             <td class="py-2.5 px-3 text-slate-400">{{ inc.started_at.strftime('%Y-%m-%d %H:%M') }}</td>
                             <td class="py-2.5 px-3 font-sans">
                                 {% if inc.status == 'OPEN' %}
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-800">АКТИВЕН</span>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-rose-950 text-rose-400 border border-rose-800">АКТИВЕН</span>
                                 {% else %}
-                                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">РЕШЕН</span>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">УСТРАНЕН</span>
                                 {% endif %}
                             </td>
                             <td class="py-2.5 px-3 text-slate-300">
@@ -243,7 +243,9 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="4" class="py-6 text-center text-slate-500 font-sans">Инцидентов не зафиксировано. Сервис работает стабильно! 🎉</td>
+                            <td colspan="4" class="py-6 text-center text-slate-400 font-sans">
+                                В Секторе спокойно. Сбоев не зафиксировано! 🌌
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -256,11 +258,11 @@
 </div>
 
 <!-- Modal: Edit Service -->
-<div id="modal-edit-service" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-            <h3 class="text-lg font-bold text-white">Редактирование настроек сервиса</h3>
-            <button onclick="closeModal('modal-edit-service')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+<div id="modal-edit-service" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-[#050e08] border border-emerald-500/50 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_40px_rgba(0,255,136,0.3)] relative max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-4 border-b border-emerald-900/60">
+            <h3 class="text-lg font-bold text-white">Калибровка параметров системы</h3>
+            <button onclick="closeModal('modal-edit-service')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-emerald-950">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
@@ -268,18 +270,18 @@
         <form onsubmit="handleEditServiceSubmit(event, {{ service.id }})" class="space-y-4 mt-5">
             <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">Название сервиса</label>
-                <input type="text" name="name" value="{{ service.name }}" required class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                <input type="text" name="name" value="{{ service.name }}" required class="w-full px-3.5 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">URL адрес или хост:порт</label>
-                <input type="text" name="url" value="{{ service.url }}" required class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                <input type="text" name="url" value="{{ service.url }}" required class="w-full px-3.5 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Тип проверки</label>
-                    <select name="check_type" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Протокол</label>
+                    <select name="check_type" class="w-full px-3.5 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                         <option value="HTTP" {% if service.check_type == 'HTTP' %}selected{% endif %}>HTTP</option>
                         <option value="HTTPS" {% if service.check_type == 'HTTPS' %}selected{% endif %}>HTTPS</option>
                         <option value="TCP" {% if service.check_type == 'TCP' %}selected{% endif %}>TCP Порт</option>
@@ -287,14 +289,14 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Категория</label>
-                    <input type="text" name="category" value="{{ service.category }}" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                    <input type="text" name="category" value="{{ service.category }}" class="w-full px-3.5 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
 
             <div class="grid grid-cols-3 gap-3">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Метод</label>
-                    <select name="method" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                    <select name="method" class="w-full px-3 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                         <option value="GET" {% if service.method == 'GET' %}selected{% endif %}>GET</option>
                         <option value="POST" {% if service.method == 'POST' %}selected{% endif %}>POST</option>
                         <option value="HEAD" {% if service.method == 'HEAD' %}selected{% endif %}>HEAD</option>
@@ -302,35 +304,35 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Ожид. статус</label>
-                    <input type="number" name="expected_status" value="{{ service.expected_status }}" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                    <input type="number" name="expected_status" value="{{ service.expected_status }}" class="w-full px-3 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Интервал (сек)</label>
-                    <input type="number" name="interval_seconds" value="{{ service.interval_seconds }}" min="5" max="3600" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                    <input type="number" name="interval_seconds" value="{{ service.interval_seconds }}" min="5" max="3600" class="w-full px-3 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
                 </div>
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">Таймаут (сек)</label>
-                <input type="number" step="0.5" name="timeout_seconds" value="{{ service.timeout_seconds }}" min="1" max="60" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                <input type="number" step="0.5" name="timeout_seconds" value="{{ service.timeout_seconds }}" min="1" max="60" class="w-full px-3.5 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">Ключевое слово в ответе</label>
-                <input type="text" name="keyword" value="{{ service.keyword or '' }}" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                <input type="text" name="keyword" value="{{ service.keyword or '' }}" class="w-full px-3.5 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">Описание</label>
-                <textarea name="description" rows="2" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">{{ service.description or '' }}</textarea>
+                <textarea name="description" rows="2" class="w-full px-3.5 py-2 bg-[#040906] border border-emerald-900 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-emerald-500">{{ service.description or '' }}</textarea>
             </div>
 
-            <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
-                <button type="button" onclick="closeModal('modal-edit-service')" class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white hover:bg-slate-800">
+            <div class="pt-4 flex items-center justify-end gap-3 border-t border-emerald-900/60">
+                <button type="button" onclick="closeModal('modal-edit-service')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-emerald-950">
                     Отмена
                 </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold">
-                    Сохранить изменения
+                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(0,255,136,0.4)]">
+                    Сохранить
                 </button>
             </div>
         </form>
@@ -340,7 +342,7 @@
 
 {% block scripts %}
 <script>
-    // Initialize Chart.js
+    // Initialize Emerald Glow Chart.js
     async function loadLatencyChart() {
         try {
             const resp = await fetch("/api/stats/service/{{ service.id }}/chart");
@@ -349,8 +351,8 @@
 
             const ctx = document.getElementById('latencyChart').getContext('2d');
             const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-            gradient.addColorStop(0, 'rgba(124, 58, 237, 0.4)');
-            gradient.addColorStop(1, 'rgba(124, 58, 237, 0.0)');
+            gradient.addColorStop(0, 'rgba(0, 255, 136, 0.45)');
+            gradient.addColorStop(1, 'rgba(0, 255, 136, 0.0)');
 
             new Chart(ctx, {
                 type: 'line',
@@ -359,13 +361,15 @@
                     datasets: [{
                         label: 'Время отклика (мс)',
                         data: data.response_times,
-                        borderColor: '#8b5cf6',
+                        borderColor: '#00ff88',
                         backgroundColor: gradient,
-                        borderWidth: 2,
-                        pointBackgroundColor: '#8b5cf6',
-                        pointRadius: 3,
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#00ff88',
+                        pointBorderColor: '#040906',
+                        pointBorderWidth: 1.5,
+                        pointRadius: 3.5,
                         pointHoverRadius: 6,
-                        tension: 0.3,
+                        tension: 0.35,
                         fill: true
                     }]
                 },
@@ -384,14 +388,14 @@
                     },
                     scales: {
                         x: {
-                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
-                            ticks: { color: '#94a3b8', maxTicksLimit: 12, font: { size: 10 } }
+                            grid: { color: 'rgba(0, 255, 136, 0.08)' },
+                            ticks: { color: '#6ee7b7', maxTicksLimit: 12, font: { size: 10, family: 'JetBrains Mono' } }
                         },
                         y: {
-                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            grid: { color: 'rgba(0, 255, 136, 0.08)' },
                             ticks: { 
-                                color: '#94a3b8',
-                                font: { size: 10 },
+                                color: '#6ee7b7',
+                                font: { size: 10, family: 'JetBrains Mono' },
                                 callback: function(val) { return val + ' мс'; }
                             },
                             beginAtZero: true

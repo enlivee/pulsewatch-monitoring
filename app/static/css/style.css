@@ -1,45 +1,85 @@
-/* PulseWatch Custom Styles */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+/* PulseWatch: Lanterns & Спокойная Ночь Edition */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Orbitron', monospace;
+
+    /* Green Lantern Core Colors */
+    --emerald-glow: #00ff88;
+    --emerald-mid: #10b981;
+    --emerald-dark: #042918;
+    --lantern-dark-bg: #040906;
 }
 
 body {
     font-family: var(--font-sans);
+    background-color: var(--lantern-dark-bg);
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
+        linear-gradient(rgba(0, 255, 136, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    background-attachment: fixed;
+}
+
+.font-display {
+    font-family: var(--font-display);
 }
 
 .font-mono {
     font-family: var(--font-mono);
 }
 
-/* Status indicator pulses */
-@keyframes pulse-ring {
+/* Green Lantern Ring Glow */
+.lantern-glow {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.35), inset 0 0 15px rgba(0, 255, 136, 0.15);
+}
+
+.lantern-glow-strong {
+    box-shadow: 0 0 35px rgba(0, 255, 136, 0.6), inset 0 0 25px rgba(0, 255, 136, 0.3);
+}
+
+.lantern-border {
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.lantern-border-hover:hover {
+    border-color: rgba(0, 255, 136, 0.8);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.25);
+}
+
+/* Glowing Pulsing Rings */
+@keyframes ring-pulse {
     0% {
-        transform: scale(0.95);
-        opacity: 0.8;
+        transform: scale(0.9);
+        opacity: 0.9;
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
     }
     50% {
-        transform: scale(1.3);
-        opacity: 0.3;
+        transform: scale(1.4);
+        opacity: 0.1;
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
     }
     100% {
-        transform: scale(0.95);
-        opacity: 0.8;
+        transform: scale(0.9);
+        opacity: 0.9;
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
     }
 }
 
-.pulse-up {
+.lantern-pulse {
     position: relative;
 }
-.pulse-up::after {
+.lantern-pulse::after {
     content: '';
     position: absolute;
     inset: -3px;
     border-radius: 9999px;
-    background-color: rgba(34, 197, 94, 0.4);
-    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background-color: rgba(0, 255, 136, 0.5);
+    animation: ring-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     pointer-events: none;
 }
 
@@ -51,36 +91,56 @@ body {
     position: absolute;
     inset: -3px;
     border-radius: 9999px;
-    background-color: rgba(239, 68, 68, 0.5);
-    animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background-color: rgba(239, 68, 68, 0.6);
+    animation: ring-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     pointer-events: none;
 }
 
-/* Glassmorphism cards */
-.glass-panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+/* Music Equalizer Bars */
+@keyframes eq-bounce-1 { 0%, 100% { height: 4px; } 50% { height: 18px; } }
+@keyframes eq-bounce-2 { 0%, 100% { height: 14px; } 50% { height: 6px; } }
+@keyframes eq-bounce-3 { 0%, 100% { height: 8px; } 50% { height: 22px; } }
+@keyframes eq-bounce-4 { 0%, 100% { height: 18px; } 50% { height: 10px; } }
+
+.eq-bar {
+    width: 3px;
+    background-color: #00ff88;
+    border-radius: 2px;
+}
+.playing .eq-bar:nth-child(1) { animation: eq-bounce-1 0.8s ease-in-out infinite; }
+.playing .eq-bar:nth-child(2) { animation: eq-bounce-2 0.7s ease-in-out infinite; }
+.playing .eq-bar:nth-child(3) { animation: eq-bounce-3 0.9s ease-in-out infinite; }
+.playing .eq-bar:nth-child(4) { animation: eq-bounce-4 0.6s ease-in-out infinite; }
+
+.paused .eq-bar {
+    height: 4px !important;
+    animation: none !important;
+    opacity: 0.4;
 }
 
-.dark .glass-panel {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(51, 65, 85, 0.7);
+/* Glassmorphism Panels */
+.lantern-panel {
+    background: rgba(6, 16, 10, 0.85);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(0, 255, 136, 0.2);
 }
 
-/* Custom scrollbars */
+.lantern-panel:hover {
+    border-color: rgba(0, 255, 136, 0.4);
+}
+
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #040906;
 }
 ::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.4);
+    background: rgba(0, 255, 136, 0.3);
     border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 0.7);
+    background: rgba(0, 255, 136, 0.6);
 }

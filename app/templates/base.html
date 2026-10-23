@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}PulseWatch | Мониторинг веб-сервисов{% endblock %}</title>
+    <title>{% block title %}PulseWatch // Спокойная Ночь • Lanterns Core{% endblock %}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,12 +12,15 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
+                        lantern: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            glow: '#00ff88',
+                            dark: '#040906',
+                            panel: '#07150c',
                         }
                     }
                 }
@@ -28,38 +31,61 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Custom Styles -->
+    <!-- Custom Lanterns Styles -->
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-black">
+
+    <!-- Top Autoplay Prompt Banner (If audio was blocked by browser) -->
+    <div id="audio-prompt-banner" class="hidden bg-emerald-950/90 border-b border-emerald-500/50 py-2.5 px-4 text-center cursor-pointer hover:bg-emerald-900/90 transition-all z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-center gap-3 text-xs sm:text-sm font-semibold text-emerald-300">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 lantern-pulse"></span>
+            <span>▶ Нажмите здесь, чтобы включить саундтрек: <strong>Группа КИНО — Спокойная ночь (Lanterns Hal Jordan Remix)</strong></span>
+            <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400 animate-bounce"></i>
+        </div>
+    </div>
 
     <!-- Top Navigation Bar -->
-    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <div class="flex items-center gap-8">
-                <a href="/" class="flex items-center gap-2.5 group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
-                        <i data-lucide="activity" class="w-5 h-5 text-white"></i>
+    <header class="sticky top-0 z-40 bg-[#040906]/90 backdrop-blur-md border-b border-emerald-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
+            <!-- Brand Logo with Lantern Ring Icon -->
+            <div class="flex items-center gap-6">
+                <a href="/" class="flex items-center gap-3 group">
+                    <!-- Glowing Green Lantern Ring SVG -->
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-950 to-emerald-900 border border-emerald-500/60 flex items-center justify-center lantern-glow group-hover:scale-105 transition-all">
+                        <svg class="w-6 h-6 text-emerald-400 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- Green Lantern Symbol -->
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+                            <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
+                            <line x1="5" y1="7" x2="19" y2="7" stroke="currentColor" stroke-width="2"></line>
+                            <line x1="5" y1="17" x2="19" y2="17" stroke="currentColor" stroke-width="2"></line>
+                        </svg>
                     </div>
                     <div>
-                        <span class="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
-                            Pulse<span class="text-brand-500">Watch</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-black tracking-wider text-white font-display">
+                                PULSE<span class="text-emerald-400 drop-shadow-[0_0_12px_rgba(0,255,136,0.8)]">WATCH</span>
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-emerald-950 text-emerald-400 border border-emerald-700/60">
+                                СЕКТОР 2814
+                            </span>
+                        </div>
+                        <span class="block text-[11px] text-emerald-500/80 font-mono tracking-wide">
+                            СПОКОЙНАЯ НОЧЬ // LANTERNS CORE
                         </span>
-                        <span class="block text-[10px] text-slate-400 font-medium uppercase tracking-wider">Uptime Monitor</span>
                     </div>
                 </a>
 
                 <!-- Nav Links -->
-                <nav class="hidden md:flex items-center gap-1">
-                    <a href="/" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'dashboard' %}bg-slate-800 text-white font-semibold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-2">
-                        <i data-lucide="layout-grid" class="w-4 h-4"></i> Дашборд
+                <nav class="hidden md:flex items-center gap-1.5 ml-4">
+                    <a href="/" class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors {% if active_page == 'dashboard' %}bg-emerald-950/80 text-emerald-300 border border-emerald-700/80 shadow-[0_0_15px_rgba(0,255,136,0.2)]{% else %}text-slate-400 hover:text-emerald-300 hover:bg-emerald-950/40{% endif %} flex items-center gap-2">
+                        <i data-lucide="radar" class="w-4 h-4 text-emerald-400"></i> Радар
                     </a>
-                    <a href="/incidents" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'incidents' %}bg-slate-800 text-white font-semibold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-2">
-                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Инциденты
+                    <a href="/incidents" class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors {% if active_page == 'incidents' %}bg-emerald-950/80 text-emerald-300 border border-emerald-700/80 shadow-[0_0_15px_rgba(0,255,136,0.2)]{% else %}text-slate-400 hover:text-emerald-300 hover:bg-emerald-950/40{% endif %} flex items-center gap-2">
+                        <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400"></i> Тревоги
                     </a>
-                    <a href="/docs" target="_blank" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors flex items-center gap-2">
-                        <i data-lucide="code" class="w-4 h-4"></i> REST API
+                    <a href="/docs" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-emerald-300 hover:bg-emerald-950/40 transition-colors flex items-center gap-2">
+                        <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> API Core
                     </a>
                 </nav>
             </div>
@@ -67,59 +93,217 @@
             <!-- Right Toolbar -->
             <div class="flex items-center gap-3">
                 <!-- Live update pill -->
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs text-slate-300">
-                    <span id="live-pulse" class="w-2 h-2 rounded-full bg-emerald-500 pulse-up"></span>
-                    <span>Автообновление: <strong id="refresh-countdown" class="font-mono text-emerald-400">15с</strong></span>
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#07160d] border border-emerald-900/60 text-xs text-emerald-300">
+                    <span id="live-pulse" class="w-2 h-2 rounded-full bg-emerald-400 lantern-pulse"></span>
+                    <span>Скан: <strong id="refresh-countdown" class="font-mono text-emerald-300">15с</strong></span>
                 </div>
 
                 <!-- Export Dropdown -->
                 <div class="relative group">
-                    <button class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium transition-colors flex items-center gap-1.5">
-                        <i data-lucide="download" class="w-4 h-4"></i> Экспорт
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <button class="px-3 py-1.5 rounded-lg bg-[#07160d] hover:bg-emerald-950 border border-emerald-800/60 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5">
+                        <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i> Экспорт
+                        <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
                     </button>
-                    <div class="absolute right-0 mt-1 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-1 hidden group-hover:block z-50">
-                        <a href="/api/export/csv" class="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i> Скачать CSV (Excel)
+                    <div class="absolute right-0 mt-1 w-48 bg-[#07160d] border border-emerald-800 rounded-xl shadow-2xl py-1 hidden group-hover:block z-50">
+                        <a href="/api/export/csv" class="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-emerald-950 hover:text-emerald-300 transition-colors">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i> Отчет CSV (Excel)
                         </a>
-                        <a href="/api/export/json" target="_blank" class="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-                            <i data-lucide="file-code" class="w-4 h-4 text-sky-400"></i> Открыть JSON
+                        <a href="/api/export/json" target="_blank" class="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-emerald-950 hover:text-emerald-300 transition-colors">
+                            <i data-lucide="file-code" class="w-4 h-4 text-emerald-400"></i> Дамп JSON
                         </a>
                     </div>
                 </div>
 
-                <!-- Add Service CTA -->
-                <button onclick="openModal('modal-add-service')" class="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold shadow-lg shadow-brand-600/25 transition-all flex items-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Добавить сервис</span>
+                <!-- Add Service CTA with Lantern Glow -->
+                <button onclick="openModal('modal-add-service')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-black text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(0,255,136,0.4)] transition-all flex items-center gap-2 hover:scale-[1.02]">
+                    <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i>
+                    <span class="hidden sm:inline">Новый сервис</span>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- Main Page Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-24">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Fixed Floating Cyber Player (Группа КИНО - Спокойная ночь / Lanterns Remix) -->
+    <div class="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-40">
+        <div class="bg-[#050d08]/95 backdrop-blur-md border border-emerald-500/50 rounded-2xl p-3 shadow-[0_0_30px_rgba(0,255,136,0.25)] flex items-center gap-3.5 max-w-md transition-all">
+            <!-- Album Art / Thumbnail -->
+            <div class="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 border border-emerald-500/40 group">
+                <img src="https://i.ytimg.com/vi/xcEvqOEgmKQ/hqdefault.jpg" alt="КИНО - Спокойная ночь (Lanterns Remix)" class="w-full h-full object-cover">
+                <a href="https://youtu.be/xcEvqOEgmKQ" target="_blank" title="Открыть видео на YouTube" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-emerald-400">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- Track Info & Visualizer -->
+            <div class="min-w-0 pr-2">
+                <div class="flex items-center gap-2">
+                    <!-- Equalizer Animation -->
+                    <div id="music-equalizer" class="flex items-end gap-0.5 h-4 playing">
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Саундтрек Сектора</span>
+                </div>
+                <div class="text-xs font-bold text-white truncate max-w-[190px] sm:max-w-[240px]">
+                    КИНО — Спокойная ночь
+                </div>
+                <div class="text-[10px] text-slate-400 font-mono truncate">
+                    Lanterns (Hal Jordan) Remix
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex items-center gap-2 pl-2 border-l border-emerald-900/60">
+                <button id="audio-toggle-btn" onclick="toggleMusicPlayback()" class="w-9 h-9 rounded-xl bg-emerald-500 text-black flex items-center justify-center hover:bg-emerald-400 transition-transform active:scale-95 shadow-[0_0_15px_rgba(0,255,136,0.5)]">
+                    <i id="audio-toggle-icon" data-lucide="pause" class="w-4 h-4 stroke-[2.5]"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden YouTube Player Container -->
+    <div id="youtube-player-host" class="hidden"></div>
+
     <!-- Footer -->
-    <footer class="border-t border-slate-800/80 bg-slate-950 py-6 mt-12 text-center text-xs text-slate-500">
+    <footer class="border-t border-emerald-950/80 bg-[#040906] py-6 text-xs text-slate-500">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>PulseWatch Monitoring Engine v1.0.0</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400 lantern-pulse"></span>
+                <span class="text-emerald-400/90 font-mono">«Тем, кто ложится спать — спокойного сна...»</span>
             </div>
-            <div>
-                FastAPI • SQLAlchemy • SQLite • Asyncio Health Checker
+            <div class="text-slate-400">
+                PulseWatch // Green Lantern Sector 2814 Monitor Engine
             </div>
         </div>
     </footer>
 
     <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
+    <div id="toast-container" class="fixed bottom-20 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
 
     <!-- Scripts -->
     <script src="/static/js/app.js"></script>
+
+    <!-- YouTube IFrame API for Autoplay -->
+    <script>
+        var ytPlayer = null;
+        var isMusicPlaying = false;
+
+        // Load YouTube IFrame Player API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('youtube-player-host', {
+                height: '1',
+                width: '1',
+                videoId: 'xcEvqOEgmKQ',
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': 'xcEvqOEgmKQ',
+                    'controls': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Attempt autoplay
+            event.target.playVideo();
+            // Check if playing or blocked
+            setTimeout(function() {
+                var state = ytPlayer.getPlayerState();
+                if (state !== YT.PlayerState.PLAYING) {
+                    // Browser blocked autoplay without user gesture -> show banner
+                    var banner = document.getElementById('audio-prompt-banner');
+                    if (banner) {
+                        banner.classList.remove('hidden');
+                        banner.onclick = function() {
+                            enableAudioAndPlay();
+                        };
+                    }
+                    // Also start on any first document click
+                    var onFirstUserGesture = function() {
+                        enableAudioAndPlay();
+                        window.removeEventListener('click', onFirstUserGesture);
+                        window.removeEventListener('keydown', onFirstUserGesture);
+                    };
+                    window.addEventListener('click', onFirstUserGesture);
+                    window.addEventListener('keydown', onFirstUserGesture);
+                } else {
+                    setMusicPlayingUI(true);
+                }
+            }, 800);
+        }
+
+        function enableAudioAndPlay() {
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                ytPlayer.unMute();
+                ytPlayer.setVolume(85);
+                ytPlayer.playVideo();
+                setMusicPlayingUI(true);
+                var banner = document.getElementById('audio-prompt-banner');
+                if (banner) banner.classList.add('hidden');
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                setMusicPlayingUI(true);
+                var banner = document.getElementById('audio-prompt-banner');
+                if (banner) banner.classList.add('hidden');
+            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                setMusicPlayingUI(false);
+            }
+        }
+
+        function setMusicPlayingUI(playing) {
+            isMusicPlaying = playing;
+            var eq = document.getElementById('music-equalizer');
+            var btnIcon = document.getElementById('audio-toggle-icon');
+
+            if (eq) {
+                if (playing) {
+                    eq.className = 'flex items-end gap-0.5 h-4 playing';
+                } else {
+                    eq.className = 'flex items-end gap-0.5 h-4 paused';
+                }
+            }
+
+            if (btnIcon) {
+                btnIcon.setAttribute('data-lucide', playing ? 'pause' : 'play');
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
+        function toggleMusicPlayback() {
+            if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
+            var state = ytPlayer.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                ytPlayer.pauseVideo();
+                setMusicPlayingUI(false);
+            } else {
+                ytPlayer.unMute();
+                ytPlayer.setVolume(85);
+                ytPlayer.playVideo();
+                setMusicPlayingUI(true);
+            }
+        }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
