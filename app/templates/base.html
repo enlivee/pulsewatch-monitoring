@@ -222,9 +222,24 @@
         }
 
         function onPlayerReady(event) {
+            // Restore playback position if user navigated from another page
+            var savedTime = parseFloat(sessionStorage.getItem('pulsewatch_track_time') || '0');
+            if (savedTime > 0) {
+                try { ytPlayer.seekTo(savedTime, true); } catch(e){}
+            }
+
             // Attempt autoplay
             event.target.playVideo();
-            // Check if playing or blocked
+
+            // Track current playback time every second
+            setInterval(function() {
+                if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function' && isMusicPlaying) {
+                    var cur = ytPlayer.getCurrentTime();
+                    if (cur > 0) sessionStorage.setItem('pulsewatch_track_time', cur);
+                }
+            }, 1000);
+
+            // Check if playing or blocked by browser autoplay policy
             setTimeout(function() {
                 var state = ytPlayer.getPlayerState();
                 if (state !== YT.PlayerState.PLAYING) {

@@ -156,6 +156,8 @@
     <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {% for s in services %}
         <div class="service-card lantern-panel lantern-border-hover rounded-2xl p-5 flex flex-col justify-between transition-all duration-300"
+             id="service-card-{{ s.id }}"
+             data-id="{{ s.id }}"
              data-name="{{ s.name | lower }}" 
              data-url="{{ s.url | lower }}" 
              data-status="{% if not s.is_active %}PAUSED{% else %}{{ s.current_status }}{% endif %}"
@@ -179,7 +181,7 @@
                     </div>
 
                     <!-- Status Badge -->
-                    <div>
+                    <div id="service-badge-{{ s.id }}">
                         {% if not s.is_active %}
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800">
                             Спящий
@@ -216,29 +218,31 @@
                 <div class="mt-4 grid grid-cols-2 gap-2 p-3 bg-[#040906]/90 rounded-xl border border-emerald-950/80">
                     <div>
                         <div class="text-[9px] text-slate-400 uppercase tracking-wider font-mono">Отклик (Latency)</div>
-                        <div class="text-sm font-bold font-mono mt-0.5 {% if s.last_response_time_ms and s.last_response_time_ms < 300 %}text-emerald-400{% elif s.last_response_time_ms and s.last_response_time_ms < 1000 %}text-amber-400{% elif s.last_response_time_ms %}text-rose-400{% else %}text-slate-400{% endif %}">
+                        <div id="service-latency-{{ s.id }}" class="text-sm font-bold font-mono mt-0.5 {% if s.last_response_time_ms and s.last_response_time_ms < 300 %}text-emerald-400{% elif s.last_response_time_ms and s.last_response_time_ms < 1000 %}text-amber-400{% elif s.last_response_time_ms %}text-rose-400{% else %}text-slate-400{% endif %}">
                             {% if s.last_response_time_ms %}{{ s.last_response_time_ms }} мс{% else %}—{% endif %}
                         </div>
                     </div>
                     <div>
                         <div class="text-[9px] text-slate-400 uppercase tracking-wider font-mono">Uptime 24ч</div>
-                        <div class="text-sm font-bold font-mono mt-0.5 text-emerald-300">
+                        <div id="service-uptime-{{ s.id }}" class="text-sm font-bold font-mono mt-0.5 text-emerald-300">
                             {{ s.uptime_24h }}%
                         </div>
                     </div>
                 </div>
 
                 <!-- Error message if any -->
-                {% if s.last_error_message %}
-                <div class="mt-2.5 px-2.5 py-1.5 rounded-lg bg-rose-950/40 border border-rose-900/60 text-[11px] text-rose-300 truncate" title="{{ s.last_error_message }}">
-                    ⚠️ {{ s.last_error_message }}
+                <div id="service-error-box-{{ s.id }}">
+                    {% if s.last_error_message %}
+                    <div class="mt-2.5 px-2.5 py-1.5 rounded-lg bg-rose-950/40 border border-rose-900/60 text-[11px] text-rose-300 truncate" title="{{ s.last_error_message }}">
+                        ⚠️ {{ s.last_error_message }}
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
 
             <!-- Card Footer & Quick Actions -->
             <div class="mt-5 pt-3.5 border-t border-emerald-950/80 flex items-center justify-between gap-2">
-                <span class="text-[10px] text-slate-500 font-mono">
+                <span id="service-time-{{ s.id }}" class="text-[10px] text-slate-500 font-mono">
                     {% if s.last_check_at %}
                     {{ s.last_check_at.strftime('%H:%M:%S') }}
                     {% else %}
@@ -253,7 +257,7 @@
                     </button>
 
                     <!-- Pause/Resume button -->
-                    <button onclick="togglePauseService({{ s.id }}, {{ 'true' if s.is_active else 'false' }})" title="{% if s.is_active %}Приостановить{% else %}Возобновить{% endif %}" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-950/50 transition-colors">
+                    <button id="service-pause-btn-{{ s.id }}" onclick="togglePauseService({{ s.id }}, {{ 'true' if s.is_active else 'false' }})" title="{% if s.is_active %}Приостановить{% else %}Возобновить{% endif %}" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-950/50 transition-colors">
                         <i data-lucide="{% if s.is_active %}pause{% else %}play{% endif %}" class="w-4 h-4"></i>
                     </button>
 
