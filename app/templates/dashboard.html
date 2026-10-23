@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Дашборд мониторинга | PulseWatch{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Global System Health Banner -->
+    {% if stats.down_count == 0 %}
+    <div class="rounded-2xl p-5 bg-gradient-to-r from-emerald-950/70 to-slate-900 border border-emerald-800/60 flex items-center justify-between shadow-xl">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center pulse-up">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-white">Все системы работают в штатном режиме</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Все {{ stats.total_services }} веб-сервисов успешно отвечают на запросы проверки доступности.</p>
+            </div>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-950/80 px-3 py-1.5 rounded-lg border border-emerald-800">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 100% Доступность
+        </div>
+    </div>
+    {% else %}
+    <div class="rounded-2xl p-5 bg-gradient-to-r from-rose-950/80 to-slate-900 border border-rose-800/70 flex items-center justify-between shadow-xl">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center pulse-down">
+                <i data-lucide="alert-octagon" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-rose-200">Внимание: обнаружен сбой в работе сервисов</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Недоступно сервисов: <strong class="text-rose-400">{{ stats.down_count }}</strong>. Активных инцидентов: <strong class="text-rose-400">{{ stats.active_incidents_count }}</strong>.</p>
+            </div>
+        </div>
+        <a href="/incidents" class="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow transition-colors flex items-center gap-1.5">
+            Смотреть инциденты <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Stat Cards Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <!-- Total -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Всего сервисов</span>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="stat-total" class="text-2xl font-bold text-white">{{ stats.total_services }}</span>
+                <i data-lucide="server" class="w-4 h-4 text-slate-500"></i>
+            </div>
+        </div>
+
+        <!-- UP -->
+        <div class="bg-slate-900/70 border border-emerald-900/40 rounded-xl p-4 flex flex-col justify-between">
+            <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Онлайн (UP)</span>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="stat-up" class="text-2xl font-bold text-emerald-400">{{ stats.up_count }}</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            </div>
+        </div>
+
+        <!-- DOWN -->
+        <div class="bg-slate-900/70 border border-rose-900/40 rounded-xl p-4 flex flex-col justify-between">
+            <span class="text-xs font-medium text-rose-400 uppercase tracking-wider">Оффлайн (DOWN)</span>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="stat-down" class="text-2xl font-bold text-rose-400">{{ stats.down_count }}</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            </div>
+        </div>
+
+        <!-- DEGRADED -->
+        <div class="bg-slate-900/70 border border-amber-900/40 rounded-xl p-4 flex flex-col justify-between">
+            <span class="text-xs font-medium text-amber-400 uppercase tracking-wider">Замедлены</span>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span class="text-2xl font-bold text-amber-400">{{ stats.degraded_count }}</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            </div>
+        </div>
+
+        <!-- Avg Uptime 24h -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Аптайм (24ч)</span>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="stat-uptime" class="text-2xl font-bold text-indigo-400">{{ stats.avg_uptime_24h }}%</span>
+                <i data-lucide="trending-up" class="w-4 h-4 text-indigo-400"></i>
+            </div>
+        </div>
+
+        <!-- Avg Latency -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Ср. отклик</span>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="stat-latency" class="text-2xl font-bold text-sky-400">
+                    {% if stats.avg_response_time_ms %}{{ stats.avg_response_time_ms }} мс{% else %}—{% endif %}
+                </span>
+                <i data-lucide="zap" class="w-4 h-4 text-sky-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Search Input -->
+        <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input 
+                type="text" 
+                id="search-input" 
+                oninput="filterServices()" 
+                placeholder="Поиск по названию или URL..." 
+                class="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors"
+            >
+        </div>
+
+        <!-- Status Filter Buttons -->
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0" id="status-filters">
+            <button onclick="setStatusFilter('ALL', this)" class="status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition-colors">
+                Все ({{ stats.total_services }})
+            </button>
+            <button onclick="setStatusFilter('UP', this)" class="status-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                Онлайн ({{ stats.up_count }})
+            </button>
+            <button onclick="setStatusFilter('DOWN', this)" class="status-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                Оффлайн ({{ stats.down_count }})
+            </button>
+            <button onclick="setStatusFilter('DEGRADED', this)" class="status-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                Замедлены ({{ stats.degraded_count }})
+            </button>
+            <button onclick="setStatusFilter('PAUSED', this)" class="status-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                Пауза ({{ stats.paused_count }})
+            </button>
+        </div>
+    </div>
+
+    <!-- Services Grid / Cards -->
+    <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {% for s in services %}
+        <div class="service-card bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-5 flex flex-col justify-between transition-all duration-200 hover:shadow-xl"
+             data-name="{{ s.name | lower }}" 
+             data-url="{{ s.url | lower }}" 
+             data-status="{% if not s.is_active %}PAUSED{% else %}{{ s.current_status }}{% endif %}"
+             data-category="{{ s.category }}">
+            
+            <div>
+                <!-- Card Header -->
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
+                                {{ s.check_type }}
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800/60 text-slate-400">
+                                {{ s.category }}
+                            </span>
+                        </div>
+                        <h3 class="text-base font-bold text-white mt-1.5 truncate" title="{{ s.name }}">
+                            <a href="/services/{{ s.id }}" class="hover:text-brand-400 transition-colors">{{ s.name }}</a>
+                        </h3>
+                    </div>
+
+                    <!-- Status Badge -->
+                    <div>
+                        {% if not s.is_active %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> Пауза
+                        </span>
+                        {% elif s.current_status == 'UP' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/80">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-up"></span> 200 OK
+                        </span>
+                        {% elif s.current_status == 'DOWN' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-400 border border-rose-800/80">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-400 pulse-down"></span> Ошибка
+                        </span>
+                        {% elif s.current_status == 'DEGRADED' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-950/80 text-amber-400 border border-amber-800/80">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Замедлен
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Ожидание
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- URL -->
+                <div class="mt-2.5 flex items-center gap-1.5 text-xs text-slate-400 font-mono truncate">
+                    <i data-lucide="link-2" class="w-3.5 h-3.5 text-slate-500 flex-shrink-0"></i>
+                    <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-400 truncate hover:underline">
+                        {{ s.url }}
+                    </a>
+                </div>
+
+                <!-- Metrics Row -->
+                <div class="mt-4 grid grid-cols-2 gap-2 p-3 bg-slate-950/60 rounded-xl border border-slate-800/70">
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Отклик (Latency)</div>
+                        <div class="text-sm font-semibold font-mono mt-0.5 {% if s.last_response_time_ms and s.last_response_time_ms < 300 %}text-emerald-400{% elif s.last_response_time_ms and s.last_response_time_ms < 1000 %}text-amber-400{% elif s.last_response_time_ms %}text-rose-400{% else %}text-slate-400{% endif %}">
+                            {% if s.last_response_time_ms %}{{ s.last_response_time_ms }} мс{% else %}—{% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Uptime 24ч</div>
+                        <div class="text-sm font-semibold font-mono mt-0.5 text-indigo-400">
+                            {{ s.uptime_24h }}%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error message if any -->
+                {% if s.last_error_message %}
+                <div class="mt-2.5 px-2.5 py-1.5 rounded-lg bg-rose-950/40 border border-rose-900/50 text-[11px] text-rose-300 truncate" title="{{ s.last_error_message }}">
+                    ⚠️ {{ s.last_error_message }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Card Footer & Quick Actions -->
+            <div class="mt-5 pt-3.5 border-t border-slate-800/70 flex items-center justify-between gap-2">
+                <span class="text-[11px] text-slate-500">
+                    {% if s.last_check_at %}
+                    {{ s.last_check_at.strftime('%H:%M:%S') }}
+                    {% else %}
+                    Еще не проверялся
+                    {% endif %}
+                </span>
+
+                <div class="flex items-center gap-1">
+                    <!-- Manual check button -->
+                    <button onclick="checkServiceNow({{ s.id }}, this)" title="Проверить сейчас" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Pause/Resume button -->
+                    <button onclick="togglePauseService({{ s.id }}, {{ 'true' if s.is_active else 'false' }})" title="{% if s.is_active %}Приостановить{% else %}Возобновить{% endif %}" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                        <i data-lucide="{% if s.is_active %}pause{% else %}play{% endif %}" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Details link -->
+                    <a href="/services/{{ s.id }}" title="Детальный отчет и графики" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1">
+                        Графики <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="col-span-full py-16 text-center bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
+                <i data-lucide="activity" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">Сервисы еще не добавлены</h3>
+            <p class="text-sm text-slate-400 mt-1 max-w-sm mx-auto">Начните автоматический мониторинг доступности ваших API, сайтов и портов прямо сейчас.</p>
+            <button onclick="openModal('modal-add-service')" class="mt-5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold shadow-lg shadow-brand-600/30 transition-all inline-flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> Добавить первый сервис
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- Modal: Add Service -->
+<div id="modal-add-service" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">Регистрация сервиса</h3>
+            </div>
+            <button onclick="closeModal('modal-add-service')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <form onsubmit="handleCreateServiceSubmit(event)" class="space-y-4 mt-5">
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Название сервиса *</label>
+                <input type="text" name="name" required placeholder="Например: Главный API шлюз" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">URL адрес или хост:порт *</label>
+                <input type="text" name="url" required placeholder="https://example.com/health или api.org:443" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Тип проверки</label>
+                    <select name="check_type" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="HTTP">HTTP</option>
+                        <option value="HTTPS">HTTPS</option>
+                        <option value="TCP">TCP Порт</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Категория</label>
+                    <input type="text" name="category" value="Общие" placeholder="API / База данных / Сайт" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Метод</label>
+                    <select name="method" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="HEAD">HEAD</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Ожид. статус</label>
+                    <input type="number" name="expected_status" value="200" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Интервал (сек)</label>
+                    <input type="number" name="interval_seconds" value="30" min="5" max="3600" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Таймаут (секунды)</label>
+                <input type="number" step="0.5" name="timeout_seconds" value="10.0" min="1" max="60" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Ожидаемое ключевое слово в теле ответа (опционально)</label>
+                <input type="text" name="keyword" placeholder="Например: 'status': 'ok'" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Описание сервиса</label>
+                <textarea name="description" rows="2" placeholder="Краткое назначение сервиса..." class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500"></textarea>
+            </div>
+
+            <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+                <button type="button" onclick="closeModal('modal-add-service')" class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                    Отмена
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold shadow-lg shadow-brand-600/30 transition-all">
+                    Создать и запустить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let activeStatusFilter = 'ALL';
+
+    function setStatusFilter(status, btn) {
+        activeStatusFilter = status;
+        document.querySelectorAll('#status-filters .status-btn').forEach(b => {
+            b.className = 'status-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors';
+        });
+        btn.className = 'status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white transition-colors';
+        filterServices();
+    }
+
+    function filterServices() {
+        const query = document.getElementById('search-input').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.service-card');
+
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            const url = card.getAttribute('data-url');
+            const status = card.getAttribute('data-status');
+
+            const matchesSearch = !query || name.includes(query) || url.includes(query);
+            const matchesStatus = activeStatusFilter === 'ALL' || status === activeStatusFilter;
+
+            if (matchesSearch && matchesStatus) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

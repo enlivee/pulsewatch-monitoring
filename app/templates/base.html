@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PulseWatch | Мониторинг веб-сервисов{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-8">
+                <a href="/" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                        <i data-lucide="activity" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+                            Pulse<span class="text-brand-500">Watch</span>
+                        </span>
+                        <span class="block text-[10px] text-slate-400 font-medium uppercase tracking-wider">Uptime Monitor</span>
+                    </div>
+                </a>
+
+                <!-- Nav Links -->
+                <nav class="hidden md:flex items-center gap-1">
+                    <a href="/" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'dashboard' %}bg-slate-800 text-white font-semibold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-2">
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i> Дашборд
+                    </a>
+                    <a href="/incidents" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_page == 'incidents' %}bg-slate-800 text-white font-semibold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/60{% endif %} flex items-center gap-2">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Инциденты
+                    </a>
+                    <a href="/docs" target="_blank" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors flex items-center gap-2">
+                        <i data-lucide="code" class="w-4 h-4"></i> REST API
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Right Toolbar -->
+            <div class="flex items-center gap-3">
+                <!-- Live update pill -->
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs text-slate-300">
+                    <span id="live-pulse" class="w-2 h-2 rounded-full bg-emerald-500 pulse-up"></span>
+                    <span>Автообновление: <strong id="refresh-countdown" class="font-mono text-emerald-400">15с</strong></span>
+                </div>
+
+                <!-- Export Dropdown -->
+                <div class="relative group">
+                    <button class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium transition-colors flex items-center gap-1.5">
+                        <i data-lucide="download" class="w-4 h-4"></i> Экспорт
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                    </button>
+                    <div class="absolute right-0 mt-1 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-1 hidden group-hover:block z-50">
+                        <a href="/api/export/csv" class="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i> Скачать CSV (Excel)
+                        </a>
+                        <a href="/api/export/json" target="_blank" class="flex items-center gap-2 px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                            <i data-lucide="file-code" class="w-4 h-4 text-sky-400"></i> Открыть JSON
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Add Service CTA -->
+                <button onclick="openModal('modal-add-service')" class="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold shadow-lg shadow-brand-600/25 transition-all flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Добавить сервис</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Page Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-6 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>PulseWatch Monitoring Engine v1.0.0</span>
+            </div>
+            <div>
+                FastAPI • SQLAlchemy • SQLite • Asyncio Health Checker
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+    <!-- Scripts -->
+    <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
